@@ -1,41 +1,41 @@
 #include "main.h"
 
 /**
- * get_precision - Calculates the precision for printing
+ * print_integer - Prints an integer with the given format
  * @format: Formatted string in which to print the arguments
  * @i: List of arguments to be printed.
  * @list: list of arguments.
  *
- * Return: Precision.
+ * Return: Number of characters printed.
  */
-int get_precision(const char *format, int *i, va_list list)
+int print_integer(const char *format, int *i, va_list list)
 {
-	int curr_i = *i + 1;
-	int precision = -1;
+	int precision = get_precision(format, i, list);
+	int num = va_arg(list, int);
+	char buffer[100];
+	int len = 0;
 
-	if (format[curr_i] != '.')
-		return (precision);
+	// Convert the integer to a string
+	snprintf(buffer, sizeof(buffer), "%d", num);
+	len = strlen(buffer);
 
-	precision = 0;
-
-	for (curr_i += 1; format[curr_i] != '\0'; curr_i++)
-	{
-		if (is_digit(format[curr_i]))
-		{
-			precision *= 10;
-			precision += format[curr_i] - '0';
+	// If precision is specified, truncate or pad the string accordingly
+	if (precision >= 0) {
+		if (len > precision) {
+			buffer[precision] = '\0';
+			len = precision;
+		} else {
+			for (int j = 0; j < precision - len; j++) {
+				putchar('0');
+			}
+			len = precision;
 		}
-		else if (format[curr_i] == '*')
-		{
-			curr_i++;
-			precision = va_arg(list, int);
-			break;
-		}
-		else
-			break;
 	}
 
-	*i = curr_i - 1;
+	// Print the formatted integer
+	for (int j = 0; j < len; j++) {
+		putchar(buffer[j]);
+	}
 
-	return (precision);
+	return len;
 }
